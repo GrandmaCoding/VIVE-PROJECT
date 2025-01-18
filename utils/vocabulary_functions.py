@@ -4,20 +4,41 @@ from services import working_with_SQL
 from config import bot, DB_NAME
 
 
-def vocabulary_output(message, returned_main_menu):
-    """Отправляет сообщение с английским словом пользователю, добавляет разметку"""
+def selecting_mode(message, returned_main_menu):
+    markup = types.InlineKeyboardMarkup()
+    button_1 = types.InlineKeyboardButton('Eng-Рус', callback_data='mode1')
+    button_2 = types.InlineKeyboardButton('Рус-Eng', callback_data='mode2')
+    markup.add(button_1, button_2)
+    bot.send_message(message.chat.id, "Выбери один из 2 режимов:", reply_markup=markup)
+    # bot.register_next_step_handler(message, vocabulary_output(returned_main_menu=returned_main_menu, message=message))
+
+
+def collecting_words(message):
     user_id = message.from_user.id
     working_with_SQL.initialization_vocabulary(DB_NAME, user_id)
     working_with_SQL.filling_vocabulary(DB_NAME, user_id)
-
     user_level_id = working_with_SQL.get_level_id(DB_NAME, user_id)
     vocabulary = working_with_SQL.get_list_of_unknown_words(DB_NAME, user_level_id, user_id)
     sample = random.sample(vocabulary, 3)
     task_word_set = random.choice(sample)
-    right_answer = task_word_set[1]
+    return sample, task_word_set
 
-    answers = [i[1] for i in sample]
-    # Всё, что выше нужно вынести в отдельный метод
+
+def vocabulary_output(message, returned_main_menu):
+    """Отправляет сообщение с английским словом пользователю, добавляет разметку"""
+    sample, task_word_set = collecting_words(message)
+    answers = []
+    right_answer = ''
+    print(message.text)
+    if message.text == 'Eng-Рус':
+        right_answer = task_word_set[1]
+        answers = [i[1] for i in sample]
+    elif message.text == 'Рус-Eng':
+        right_answer = task_word_set[0]
+        answers = [i[0] for i in sample]
+    elif message.text == "главная страница":
+        returned_main_menu(message)
+    print(answers)
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     button_a = types.KeyboardButton(answers[0])

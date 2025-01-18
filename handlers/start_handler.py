@@ -8,5 +8,3 @@ def register_start_handler():
         text = "Этот чат-бот создан для обучения английскому!"
         bot.send_message(message.chat.id, text)
         level_selection_functions.level_selection(message)
-
-

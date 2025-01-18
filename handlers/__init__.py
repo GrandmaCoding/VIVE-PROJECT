@@ -2,6 +2,7 @@ from .start_handler import register_start_handler
 from .level_selection_handler import register_level_selection_handler
 from .theory_handler import register_theory_handler, register_explanation_handler
 from .translate_handler import register_translate_handler
+from .quiz_mode_selection_handler import register_quiz_mode_selection_handler
 
 
 def register_handlers():
@@ -10,3 +11,4 @@ def register_handlers():
     register_theory_handler()
     register_explanation_handler()
     register_translate_handler()
+    register_quiz_mode_selection_handler()
